@@ -19,7 +19,17 @@ const port = process.env.PORT || 3000;
 
 // Middleware de seguridad
 app.use(helmet()); // Añade headers de seguridad
-app.use(cors()); // Permite solicitudes de origen cruzado
+
+// Configuración de CORS para restringir accesos
+const corsOptions = {
+  origin: ['https://el-huequito.netlify.app', 'http://localhost:3000'], // Lista de dominios permitidos
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos HTTP permitidos
+  allowedHeaders: ['Content-Type', 'Authorization'], // Headers permitidos
+  credentials: true, // Permitir envío de cookies u otras credenciales
+};
+
+app.use(cors(corsOptions)); // Aplica la configuración de CORS
+
 app.use(express.json()); // Parseo de JSON
 
 // Rutas de la API
