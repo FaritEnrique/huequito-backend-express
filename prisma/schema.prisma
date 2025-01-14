@@ -1,0 +1,53 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model clientes {
+  id        Int    @id @default(autoincrement())
+  nombre    String @db.VarChar(255)
+  dni       String @unique @db.VarChar(9)
+  direccion String @db.VarChar(100)
+  celular   String @db.VarChar(13)
+  correo    String @unique @db.VarChar(50)
+  condicion String @db.VarChar(20)
+}
+
+model ideas {
+  id   Int    @id @default(autoincrement())
+  foto String @db.VarChar(255)
+}
+
+model mensajes {
+  id           Int      @id @default(autoincrement())
+  nombre       String   @db.VarChar(150)
+  celular      String   @unique @db.VarChar(13)
+  correo       String   @unique @db.VarChar(50)
+  fecha        DateTime @default(now()) @db.Timestamp(6)
+  comunicacion String   @db.VarChar(30)
+  mensaje      String
+}
+
+model preguntas {
+  id        Int    @id @default(autoincrement())
+  pregunta  String @db.Text
+  respuesta String @db.Text
+}
+
+model promociones {
+  id             Int      @id @default(autoincrement())
+  titulo         String   @unique @db.VarChar(255)
+  descripcion    String
+  fecha_inicio   DateTime @db.Date
+  fecha_termino  DateTime @db.Date
+  imagen_url     String   @db.VarChar(255)
+  creado_en      DateTime @default(now()) @db.Timestamp(6)
+  creado_por     String   @db.VarChar(100)
+  is_active      Boolean
+  actualizado_en DateTime @default(now()) @db.Timestamp(6)
+}
