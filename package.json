@@ -7,6 +7,9 @@
   "scripts": {
     "dev": "nodemon app.js",
     "start": "node app.js",
+    "build": "echo 'No build step necessary'",
+    "lint": "eslint .",
+    "prestart": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -31,5 +34,16 @@
     "@types/express": "^5.0.0",
     "nodemon": "^3.1.9",
     "prisma": "^6.2.1"
-  }
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/farit/huequito-backend-express.git"
+  },
+  "bugs": {
+    "url": "https://github.com/farit/huequito-backend-express/issues"
+  },
+  "homepage": "https://github.com/farit/huequito-backend-express#readme"
 }

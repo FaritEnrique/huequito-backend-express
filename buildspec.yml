@@ -1,0 +1,26 @@
+version: 0.1
+phases:
+  install:
+    runtime-versions:
+      nodejs: 22.13
+    commands:
+      - echo Installing dependencies...
+      - npm install
+  pre_build:
+    commands:
+      - echo Preparing build...
+  build:
+    commands:
+      - echo No build step is required for a Node.js backend.
+  post_build:
+    commands:
+      - echo Build complete. Ready to deploy.
+artifacts:
+  files:
+    - '**/*'
+    - '!node_modules/**/*'
+    - '!*.log'
+  discard-paths: no
+cache:
+  paths:
+    - node_modules/**/*
