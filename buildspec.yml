@@ -1,35 +1,47 @@
 version: 0.2
 
+env:
+  variables:
+    ImageName: "huequito-backend-image" # Define el nombre de la imagen Docker
+
 phases:
   install:
     runtime-versions:
-      nodejs: 16 # CAMBIA ESTO A LA VERSIÓN DE NODE QUE USES (ej: 18, 20)
+      nodejs: 16 # Cambia esto a la versión que estás utilizando (ejemplo: 18, 20)
     commands:
       - echo "Iniciando instalación de dependencias..."
-      - npm ci # O npm install si no tienes package-lock.json
+      - npm ci # O usa 'npm install' si no tienes package-lock.json
       - echo "Dependencias instaladas."
 
   pre_build:
     commands:
+      - echo "Validando la presencia del Dockerfile..."
+      - if [ ! -f Dockerfile ]; then echo "Dockerfile no encontrado en la raíz"; exit 1; fi
       - echo "Generando cliente de Prisma y aplicando migraciones..."
       - npx prisma generate
       - npx prisma migrate deploy # O npx prisma db push si usas SQLite
       - echo "Migraciones aplicadas."
 
+  build:
+    commands:
+      - echo "Construyendo la imagen Docker..."
+      - docker build -t $ImageName -f ./Dockerfile .
+      - echo "Imagen Docker construida con éxito."
+
   post_build:
     commands:
-      - echo "Empaquetando artefactos para despliegue..."
-      - mkdir build-output
-      - cp -r node_modules build-output
-      - cp -r prisma build-output
-      - cp package.json build-output
-      - cp package-lock.json build-output
-      - cp -r src build-output # Copia tu código fuente
-      - cp .env build-output # COPIA EL .ENV (debe estar en .gitignore)
-      - zip -r application.zip build-output
-      - echo "Artefactos empaquetados en application.zip"
+      - echo "Etiquetando la imagen Docker para ECR..."
+      - docker tag $ImageName:latest 484907506570.dkr.ecr.us-east-1.amazonaws.com/$ImageName:latest
+      - echo "Subiendo la imagen Docker a ECR..."
+      - docker push 484907506570.dkr.ecr.us-east-1.amazonaws.com/$ImageName:latest
+      - echo "Imagen Docker subida a ECR exitosamente."
 
 artifacts:
   files:
-    - application.zip
+    - Dockerfile
+    - prisma/*
+    - package.json
+    - package-lock.json
+    - src/**/*
+    - .env # Incluye este archivo si es necesario (y está en .gitignore)
   discard-paths: yes
