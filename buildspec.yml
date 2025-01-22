@@ -1,26 +1,41 @@
-version: 0.1
+version: 0.2
+
 phases:
   install:
     runtime-versions:
-      nodejs: 22.13
+      nodejs: 16 # O la versión de Node.js que uses (ej: 18, 20)
     commands:
-      - echo Installing dependencies...
-      - npm install
+      - echo "Iniciando instalación de dependencias..."
+      - npm ci # o npm install (npm ci es preferible en CI/CD)
+      - echo "Dependencias instaladas."
+
   pre_build:
     commands:
-      - echo Preparing build...
+      - echo "Generando cliente de Prisma y aplicando migraciones..."
+      - npx prisma generate
+      - npx prisma migrate deploy # o npx prisma db push si usas SQLite
+      - echo "Migraciones aplicadas."
+
   build:
     commands:
-      - echo No build step is required for a Node.js backend.
+      - echo "Construyendo la aplicación (si aplica)..."
+      - npm run build # Ejecuta el script de build si lo tienes (ej: para Typescript)
+      - echo "Construcción completada." # Si no tienes build, puedes comentar o eliminar esta fase
+
   post_build:
     commands:
-      - echo Build complete. Ready to deploy.
+      - echo "Empaquetando artefactos para despliegue..."
+      - mkdir build-output
+      - cp -r node_modules build-output
+      - cp -r prisma build-output # Importante: Copia la carpeta prisma
+      - cp package.json build-output
+      - cp package-lock.json build-output
+      - cp -r src build-output # Copia tu código fuente
+      - cp .env build-output # MUY IMPORTANTE: Copia el .env. Asegúrate de tenerlo en .gitignore
+      - zip -r application.zip build-output
+      - echo "Artefactos empaquetados en application.zip"
+
 artifacts:
   files:
-    - '**/*'
-    - '!node_modules/**/*'
-    - '!*.log'
-  discard-paths: no
-cache:
-  paths:
-    - node_modules/**/*
+    - application.zip
+  discard-paths: yes # Elimina las rutas del directorio en el zip
