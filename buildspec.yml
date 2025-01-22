@@ -2,22 +2,20 @@ version: 0.2
 
 phases:
   install:
+    runtime-versions:
+      nodejs: 16 # Cambia esta versión según tu proyecto
     commands:
-      - echo "Instalando Node.js y herramientas necesarias..."
-      - nvm install 16 # Cambia a la versión de Node.js que usas en el proyecto
-      - node -v
-      - npm -v
-  pre_build:
-    commands:
-      - echo "Instalando dependencias del proyecto..."
+      - echo "Instalando dependencias..."
       - npm install
   build:
     commands:
-      - echo "Ejecutando pruebas..."
-      - npm test # Ajusta este comando si no tienes pruebas configuradas o deseas omitirlas
+      - echo "Ejecutando pruebas y construyendo la aplicación..."
+      - npm run build # Cambia este comando según tu necesidad o elimina si no tienes una fase de construcción
   post_build:
     commands:
-      - echo "Construcción completada."
+      - echo "Listo para el despliegue"
+
 artifacts:
   files:
-    - "**/*" # Incluye todos los archivos del proyecto en los artefactos de compilación
+    - "**/*"
+  discard-paths: yes
