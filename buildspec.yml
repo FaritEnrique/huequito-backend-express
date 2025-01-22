@@ -3,17 +3,17 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      nodejs: 16 # O la versión que uses
+      nodejs: 16 # CAMBIA ESTO A LA VERSIÓN DE NODE QUE USES (ej: 18, 20)
     commands:
       - echo "Iniciando instalación de dependencias..."
-      - npm ci # o npm install
+      - npm ci # O npm install si no tienes package-lock.json
       - echo "Dependencias instaladas."
 
   pre_build:
     commands:
       - echo "Generando cliente de Prisma y aplicando migraciones..."
       - npx prisma generate
-      - npx prisma migrate deploy # o npx prisma db push si usas SQLite
+      - npx prisma migrate deploy # O npx prisma db push si usas SQLite
       - echo "Migraciones aplicadas."
 
   post_build:
@@ -25,7 +25,7 @@ phases:
       - cp package.json build-output
       - cp package-lock.json build-output
       - cp -r src build-output # Copia tu código fuente
-      - cp .env build-output # MUY IMPORTANTE: Copia el .env. Asegúrate de tenerlo en .gitignore
+      - cp .env build-output # COPIA EL .ENV (debe estar en .gitignore)
       - zip -r application.zip build-output
       - echo "Artefactos empaquetados en application.zip"
 
