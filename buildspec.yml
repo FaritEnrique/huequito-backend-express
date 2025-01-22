@@ -3,10 +3,10 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      nodejs: 16 # O la versión de Node.js que uses (ej: 18, 20)
+      nodejs: 16 # O la versión que uses
     commands:
       - echo "Iniciando instalación de dependencias..."
-      - npm ci # o npm install (npm ci es preferible en CI/CD)
+      - npm ci # o npm install
       - echo "Dependencias instaladas."
 
   pre_build:
@@ -16,18 +16,12 @@ phases:
       - npx prisma migrate deploy # o npx prisma db push si usas SQLite
       - echo "Migraciones aplicadas."
 
-  build:
-    commands:
-      - echo "Construyendo la aplicación (si aplica)..."
-      - npm run build # Ejecuta el script de build si lo tienes (ej: para Typescript)
-      - echo "Construcción completada." # Si no tienes build, puedes comentar o eliminar esta fase
-
   post_build:
     commands:
       - echo "Empaquetando artefactos para despliegue..."
       - mkdir build-output
       - cp -r node_modules build-output
-      - cp -r prisma build-output # Importante: Copia la carpeta prisma
+      - cp -r prisma build-output
       - cp package.json build-output
       - cp package-lock.json build-output
       - cp -r src build-output # Copia tu código fuente
@@ -38,4 +32,4 @@ phases:
 artifacts:
   files:
     - application.zip
-  discard-paths: yes # Elimina las rutas del directorio en el zip
+  discard-paths: yes
