@@ -26,11 +26,12 @@ model ideas {
 model mensajes {
   id           Int      @id @default(autoincrement())
   nombre       String   @db.VarChar(150)
-  celular      String   @unique @db.VarChar(13)
+  celular      String   @db.VarChar(13)
   correo       String   @unique @db.VarChar(50)
   fecha        DateTime @default(now()) @db.Timestamp(6)
   comunicacion String   @db.VarChar(30)
   mensaje      String
+  response     String? @db.Text
 }
 
 model preguntas {

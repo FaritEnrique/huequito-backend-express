@@ -6,6 +6,10 @@ const crearMensaje = async (req, res) => {
   try {
     let { nombre, celular, correo, comunicacion, mensaje } = req.body;
 
+    if (!nombre || !celular || !correo || !comunicacion || !mensaje) {
+      return res.status(400).json({ error: 'Faltan campos obligatorios' });
+    }
+
     // Verificar si el celular tiene el prefijo +51, si no lo tiene, agregarlo
     if (!celular.startsWith('+51')) {
       celular = '+51' + celular.replace(/^(\+51)?/, ''); // Agregar +51 al inicio si no está presente
@@ -31,6 +35,11 @@ const crearMensaje = async (req, res) => {
 const obtenerMensajes = async (req, res) => {
   try {
     const mensajes = await prisma.mensajes.findMany();
+    const mensajesFormateados = mensajes.map((mensaje) => ({
+      ...mensaje,
+      fecha: mensaje.fecha.toISOString(),
+    }));
+
     return res.status(200).json(mensajes);
   } catch (error) {
     console.error(error);
@@ -58,7 +67,8 @@ const obtenerMensajePorId = async (req, res) => {
 // Actualizar un mensaje por ID
 const actualizarMensaje = async (req, res) => {
   const { id } = req.params;
-  let { nombre, celular, correo, comunicacion, mensaje } = req.body;
+  const { response } = req.body;
+  let { nombre, celular, correo, comunicacion, mensaje } = response;
 
   try {
     // Verificar si el celular tiene el prefijo +51, si no lo tiene, agregarlo
