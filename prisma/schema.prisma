@@ -52,3 +52,12 @@ model promociones {
   is_active      Boolean
   actualizado_en DateTime @default(now()) @db.Timestamp(6)
 }
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  password     String
+  resetToken   String?  // Token de recuperación
+  resetExpires DateTime? // Fecha de expiración del token
+}
