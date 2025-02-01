@@ -61,3 +61,41 @@ model User {
   resetToken   String?  // Token de recuperación
   resetExpires DateTime? // Fecha de expiración del token
 }
+
+model Producto {
+  id              Int                @id @default(autoincrement())
+  nombre          String
+  descripcion     String?
+  precio          Float
+  activo          Boolean            @default(true)
+  imagenUrl       String?            // Campo para la URL de la imagen del producto
+  marcaId         Int
+  tipoProductoId  Int
+  marca           Marca              @relation(fields: [marcaId], references: [id])
+  tipoProducto    TipoProducto       @relation(fields: [tipoProductoId], references: [id])
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+}
+
+model Marca {
+  id        Int         @id @default(autoincrement())
+  nombre    String      @unique
+  productos Producto[]  // Una marca puede tener múltiples productos
+  tipoProductosMarca TipoProductoMarca[] // Relación muchos a muchos con TipoProducto
+}
+
+model TipoProducto {
+  id        Int         @id @default(autoincrement())
+  nombre    String      @unique
+  productos Producto[]  // Un tipo de producto puede estar asociado a múltiples productos
+  marcas TipoProductoMarca[] // Relación muchos a muchos con Marca
+}
+
+model TipoProductoMarca {
+  marcaId       Int
+  tipoProductoId Int
+  marca         Marca        @relation(fields: [marcaId], references: [id])
+  tipoProducto  TipoProducto @relation(fields: [tipoProductoId], references: [id])
+
+  @@id([marcaId, tipoProductoId]) // Definir como clave primaria compuesta
+}

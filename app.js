@@ -10,6 +10,9 @@ import mensajesRoutes from './routes/mensajesRoutes.js'; // Importa las rutas de
 import preguntasRoutes from './routes/preguntasRoutes.js'; // Importa las rutas de preguntas
 import promocionesRoutes from './routes/promocionesRoutes.js'; // Importa las rutas de promociones
 import authRoutes from './routes/authRoutes.js';
+import productoRoutes from './routes/productoRoutes.js'; // Importa las rutas de productos
+import marcaRoutes from './routes/marcaRoutes.js'; // Importa las rutas de marcas
+import tipoProductoRoutes from './routes/tipoProductoRoutes.js'; // Importa las rutas de tipo de productos
 
 // Carga las variables de entorno desde el archivo .env
 dotenv.config();
@@ -37,7 +40,6 @@ const corsOptions = {
 app.use(cors(corsOptions)); // Aplica la configuración de CORS
 
 app.use(express.json()); // Parseo de JSON
-
 app.use(express.urlencoded({ extended: true }));
 
 // Rutas de la API
@@ -47,6 +49,9 @@ app.use('/api/mensajes', mensajesRoutes);   // Rutas de mensajes
 app.use('/api/preguntas', preguntasRoutes); // Rutas de preguntas
 app.use('/api/promociones', promocionesRoutes); // Rutas de promociones
 app.use('/api/auth', authRoutes); // Rutas de autenticación
+app.use('/api/productos', productoRoutes);  // Rutas de productos
+app.use('/api/marcas', marcaRoutes);        // Rutas de marcas
+app.use('/api/tipo-productos', tipoProductoRoutes); // Rutas de tipo de productos
 
 // Middleware global para manejar errores
 app.use((err, req, res, next) => {
@@ -56,9 +61,10 @@ app.use((err, req, res, next) => {
     success: false,
     message: err.message || 'Algo salió mal en el servidor',
   });
+  res.status(404).json({ message: 'Ruta no encontrada' });
 });
 
-// Inicializa el servidormigrza
+// Inicializa el servidor
 app.listen(port, () => {
   console.log(`Mi Backend está funcionando 🔥🎉🦾`);
   console.log(`http://localhost:${port}/`);
