@@ -7,8 +7,8 @@ import {
     loginUser, 
     requestPasswordReset, 
     resetPassword 
-} from '../controllers/authController.js';  // Asegúrate de tener las extensiones .js
-import protect from '../middlewares/authMiddleware.js';  // Igualmente, asegurarse de que la extensión sea .js
+} from '../controllers/authController.js'; // Asegúrate de tener las extensiones .js
+import protect from '../middlewares/authMiddleware.js'; // Igualmente, asegurarse de que la extensión sea .js
 
 const router = express.Router();
 
@@ -40,4 +40,4 @@ router.post('/request-password-reset', requestPasswordReset);
 // Ruta para restablecer la contraseña
 router.post('/reset-password/:resetToken', resetPassword);
 
-export default router
+export default router;

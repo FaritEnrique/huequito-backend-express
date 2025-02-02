@@ -1,6 +1,5 @@
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
-import { ValidationError } from 'sequelize'; // Para lanzar errores
 
 // Crear una nueva promoción
 const crearPromocion = async (req, res) => {
@@ -9,11 +8,11 @@ const crearPromocion = async (req, res) => {
   try {
     // Validaciones personalizadas
     if (new Date(fecha_termino) < new Date(fecha_inicio)) {
-      throw new ValidationError('La fecha de término no puede ser anterior a la fecha de inicio.');
+      return res.status(400).json({ error: 'La fecha de término no puede ser anterior a la fecha de inicio.' });
     }
     
     if (new Date(fecha_inicio) < new Date()) {
-      throw new ValidationError('La fecha de inicio no puede estar en el pasado.');
+      return res.status(400).json({ error: 'La fecha de inicio no puede estar en el pasado.' });
     }
 
     // Convertir el valor de is_active en un valor booleano
@@ -33,9 +32,7 @@ const crearPromocion = async (req, res) => {
 
     return res.status(201).json(promocion);
   } catch (error) {
-    if (error instanceof ValidationError) {
-      return res.status(400).json({ error: error.message });
-    }
+    console.error(error);
     return res.status(500).json({ error: 'Error al crear la promoción' });
   }
 };
@@ -46,6 +43,7 @@ const obtenerPromociones = async (req, res) => {
     const promociones = await prisma.promociones.findMany();
     return res.status(200).json(promociones);
   } catch (error) {
+    console.error(error);
     return res.status(500).json({ error: 'Error al obtener las promociones' });
   }
 };
@@ -62,6 +60,7 @@ const obtenerPromocionPorId = async (req, res) => {
     }
     return res.status(200).json(promocion);
   } catch (error) {
+    console.error(error);
     return res.status(500).json({ error: 'Error al obtener la promoción' });
   }
 };
@@ -74,11 +73,11 @@ const actualizarPromocion = async (req, res) => {
   try {
     // Validaciones personalizadas
     if (new Date(fecha_termino) < new Date(fecha_inicio)) {
-      throw new ValidationError('La fecha de término no puede ser anterior a la fecha de inicio.');
+      return res.status(400).json({ error: 'La fecha de término no puede ser anterior a la fecha de inicio.' });
     }
     
     if (new Date(fecha_inicio) < new Date()) {
-      throw new ValidationError('La fecha de inicio no puede estar en el pasado.');
+      return res.status(400).json({ error: 'La fecha de inicio no puede estar en el pasado.' });
     }
 
     // Convertir el valor de is_active en un valor booleano
@@ -98,9 +97,7 @@ const actualizarPromocion = async (req, res) => {
 
     return res.status(200).json(promocion);
   } catch (error) {
-    if (error instanceof ValidationError) {
-      return res.status(400).json({ error: error.message });
-    }
+    console.error(error);
     return res.status(500).json({ error: 'Error al actualizar la promoción' });
   }
 };
@@ -114,6 +111,7 @@ const eliminarPromocion = async (req, res) => {
     });
     return res.status(200).json({ message: 'Promoción eliminada correctamente' });
   } catch (error) {
+    console.error(error);
     return res.status(500).json({ error: 'Error al eliminar la promoción' });
   }
 };

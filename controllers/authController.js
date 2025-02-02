@@ -4,8 +4,8 @@ import bcrypt from 'bcryptjs';
 import { PrismaClient } from '@prisma/client';
 import generateToken from '../utils/generateToken.js';
 import { validationResult } from 'express-validator';
-import crypto from 'crypto';
-import nodemailer from 'nodemailer';
+import { randomBytes } from 'node:crypto';  // Usamos la versión nativa de Node.js
+import nodemailer from 'nodemailer';  // Usamos la importación estándar, no hace falta 'await import'
 
 const prisma = new PrismaClient();
 
@@ -129,7 +129,7 @@ const requestPasswordReset = async (req, res) => {
         }
 
         // Generar un token de restablecimiento
-        const resetToken = crypto.randomBytes(32).toString('hex');
+        const resetToken = randomBytes(32).toString('hex');  // Usamos randomBytes de Node.js nativo
         const resetTokenExpiration = Date.now() + 3600000; // 1 hora de validez
 
         // Guardar el token en la base de datos
