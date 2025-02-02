@@ -40,7 +40,7 @@
     "prisma": "^6.3.0"
   },
   "engines": {
-    "node": "22.13.0"
+    "node": "22.x"
   },
   "repository": {
     "type": "git",
