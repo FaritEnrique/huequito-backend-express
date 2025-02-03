@@ -13,6 +13,8 @@ import authRoutes from './routes/authRoutes.js';
 import productoRoutes from './routes/productoRoutes.js';
 import marcaRoutes from './routes/marcaRoutes.js';
 import tipoProductoRoutes from './routes/tipoProductoRoutes.js';
+import { createCanvas } from 'canvas';  // Importa la librería canvas
+import morgan from 'morgan';  // Importa morgan para el logging
 
 // Carga las variables de entorno desde el archivo .env
 dotenv.config();
@@ -46,7 +48,7 @@ app.use((req, res, next) => {
 
 // Configuración de CORS para restringir accesos
 const corsOptions = {
-  origin: ['https://el-huequito.netlify.app', 'http://localhost:3000'], // Dominios permitidos
+  origin: ['https://el-huequito.netlify.app'], // Dominios permitidos
   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
   allowedHeaders: ['Content-Type', 'Authorization'], // Headers permitidos
   credentials: true, // Permitir cookies o credenciales
@@ -54,8 +56,26 @@ const corsOptions = {
 
 app.use(cors(corsOptions)); // Aplica la configuración de CORS
 
+// Middleware de logging con morgan
+app.use(morgan('combined')); // Usa 'combined' para un log detallado
+
 app.use(express.json()); // Parseo de JSON
 app.use(express.urlencoded({ extended: true }));
+
+// Ruta para generar una imagen dinámica con canvas
+app.get('/api/generar-imagen', (req, res) => {
+  // Crea un canvas de 500x500 píxeles
+  const canvas = createCanvas(500, 500);
+  const ctx = canvas.getContext('2d');
+
+  // Dibuja un rectángulo azul en el canvas
+  ctx.fillStyle = 'blue';
+  ctx.fillRect(10, 10, 100, 100);
+
+  // Establece los encabezados para la imagen en formato PNG
+  res.setHeader('Content-Type', 'image/png');
+  res.send(canvas.toBuffer('image/png')); // Devuelve la imagen como buffer PNG
+});
 
 // Rutas de la API
 app.use('/api/clientes', clientesRoutes);
