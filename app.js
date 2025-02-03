@@ -50,7 +50,7 @@ app.use((req, res, next) => {
 const corsOptions = {
   origin: ['https://el-huequito.netlify.app'], // Dominios permitidos
   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
-  allowedHeaders: ['Content-Type', 'Authorization'], // Headers permitidos
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept'], // Headers permitidos
   credentials: true, // Permitir cookies o credenciales
 };
 
