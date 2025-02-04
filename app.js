@@ -23,7 +23,7 @@ dotenv.config();
 const app = express();
 
 // Puerto del servidor
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8080;
 
 // 🔐 Middleware para redirigir de HTTP a HTTPS
 app.use((req, res, next) => {
@@ -103,7 +103,7 @@ app.use((err, req, res, next) => {
 });
 
 // Inicializa el servidor
-app.listen(port, () => {
+app.listen(port, '0.0.0.0', () => {
   console.log(`Mi Backend está funcionando 🔥🎉🦾`);
   console.log(`http://localhost:${port}/`);
 });
