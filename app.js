@@ -13,37 +13,30 @@ import authRoutes from './routes/authRoutes.js';
 import productoRoutes from './routes/productoRoutes.js';
 import marcaRoutes from './routes/marcaRoutes.js';
 import tipoProductoRoutes from './routes/tipoProductoRoutes.js';
-import { createCanvas } from 'canvas';  // Importa la librería canvas
-import morgan from 'morgan';  // Importa morgan para el logging
+import { createCanvas } from 'canvas';
+import morgan from 'morgan';
 
-// Fuerza UTF-8 para la consola
 process.stdout.write('\uFEFF');
-
-// Carga las variables de entorno desde el archivo .env
 dotenv.config();
 
-// Inicializa la aplicación de Express
 const app = express();
-
-// Puerto del servidor
 const port = process.env.PORT || 8080;
 
-// Confía en el proxy de AWS Elastic Beanstalk
 app.enable('trust proxy');
 
-// 🔐 Middleware para redirigir de HTTP a HTTPS
+// 🔐 Middleware para redirigir de HTTP a HTTPS si no está detrás de un proxy
 app.use((req, res, next) => {
-  if (process.env.FORCE_HTTPS === 'true' && !req.secure) {
+  if (process.env.FORCE_HTTPS === 'true' && req.headers['x-forwarded-proto'] !== 'https') {
     return res.redirect(`https://${req.headers.host}${req.url}`);
   }
   next();
 });
 
 // 🛡️ Middleware de seguridad
-// app.use(helmet()); // Comentado temporalmente para descartar conflictos
+app.use(helmet());
 
-// 🌐 Encabezados de seguridad adicionales
-/* Estos encabezados pueden generar conflictos si se cargan recursos externos
+// 🌐 Encabezados de seguridad adicionales (comentado para evitar conflictos)
+/*
 app.use((req, res, next) => {
   res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
   res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
@@ -51,20 +44,17 @@ app.use((req, res, next) => {
 });
 */
 
-// Configuración de CORS para restringir accesos
+// Configuración de CORS
 const corsOptions = {
-  origin: ['https://el-huequito.netlify.app', 'http://localhost:3000'], // Dominios permitidos
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
-  allowedHeaders: ['Content-Type', 'Authorization', 'Accept'], // Headers permitidos
-  credentials: true, // Permitir cookies o credenciales
+  origin: ['https://el-huequito.netlify.app', 'http://localhost:3000'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+  credentials: true,
 };
 
-app.use(cors(corsOptions)); // Aplica la configuración de CORS
-
-// Middleware de logging con morgan
-app.use(morgan('combined')); // Usa 'combined' para un log detallado
-
-app.use(express.json()); // Parseo de JSON
+app.use(cors(corsOptions));
+app.use(morgan('combined'));
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Ruta para generar una imagen dinámica con canvas
@@ -104,7 +94,6 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Inicializa el servidor
 app.listen(port, '0.0.0.0', () => {
   console.log(`Mi Backend está funcionando 🔥🎉🦾`);
   console.log(`http://localhost:${port}/`);
