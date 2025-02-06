@@ -40,7 +40,7 @@ app.use((req, res, next) => {
 });
 
 // 🛡️ Middleware de seguridad
-// app.use(helmet()); // Comentado temporalmente para descartar conflictos
+app.use(helmet()); // Comentado temporalmente para descartar conflictos
 
 // 🌐 Encabezados de seguridad adicionales
 /* Estos encabezados pueden generar conflictos si se cargan recursos externos
@@ -53,7 +53,12 @@ app.use((req, res, next) => {
 
 // Configuración de CORS para restringir accesos
 const corsOptions = {
-  origin: ['https://el-huequito.netlify.app', 'http://localhost:3000'], // Dominios permitidos
+  origin: [
+    'https://el-huequito.netlify.app',
+    'http://localhost:3000',
+    'https://backendhuequito.com',
+    'https://api.backendhuequito.com'
+  ], // Dominios permitidos
   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept'], // Headers permitidos
   credentials: true, // Permitir cookies o credenciales
