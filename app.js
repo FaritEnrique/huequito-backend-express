@@ -85,6 +85,11 @@ app.get('/api/generar-imagen', (req, res) => {
 });
 
 // Rutas de la API
+
+app.get('/', (req, res) => {
+  res.send('Backend funcionando');
+});
+
 app.use('/api/clientes', clientesRoutes);
 app.use('/api/ideas', ideasRoutes);
 app.use('/api/mensajes', mensajesRoutes);
