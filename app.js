@@ -13,8 +13,8 @@ import authRoutes from './routes/authRoutes.js';
 import productoRoutes from './routes/productoRoutes.js';
 import marcaRoutes from './routes/marcaRoutes.js';
 import tipoProductoRoutes from './routes/tipoProductoRoutes.js';
-import { createCanvas } from 'canvas';  // Importa la librería canvas
-import morgan from 'morgan';  // Importa morgan para el logging
+import { createCanvas } from 'canvas'; // Importa la librería canvas
+import morgan from 'morgan'; // Importa morgan para el logging
 
 // Fuerza UTF-8 para la consola
 process.stdout.write('\uFEFF');
