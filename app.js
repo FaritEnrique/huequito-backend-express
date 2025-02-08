@@ -40,40 +40,29 @@ app.use((req, res, next) => {
 });
 
 // ️ Middleware de seguridad
-app.use(helmet()); // Comentado temporalmente para descartar conflictos
+app.use(helmet()); // Reactivado tras revisión
 
-//  Encabezados de seguridad adicionales
-/* Estos encabezados pueden generar conflictos si se cargan recursos externos
-app.use((req, res, next) => {
-    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
-    res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
-    next();
-});
-*/
-
-// Configuración de CORS para restringir accesos *MEJORADA*
+// Configuración de CORS mejorada
 const allowedOrigins = process.env.NODE_ENV === 'production' ? [
     'https://el-huequito.netlify.app', // Origen de producción
     'https://www.el-huequito.netlify.app' // Con www
-] : [
-    '*' // Origen comodín SOLO en desarrollo
-];
+] : ['*'];
 
 app.use(cors({
     origin: function (origin, callback) {
-        if (!origin || allowedOrigins.includes(origin)) {
+        if (!origin || allowedOrigins.includes(origin) || process.env.NODE_ENV !== 'production') {
             callback(null, true);
         } else {
-            console.error("CORS Error: Origin not allowed:", origin); // Log para depuración
+            console.error("CORS Error: Origin not allowed:", origin);
             callback(new Error('Not allowed by CORS'));
         }
     },
-    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos (Añadido OPTIONS y PATCH)
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'], // Añadido OPTIONS y PATCH
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept'], // Headers permitidos
 }));
 
 // Middleware de logging con morgan
-app.use(morgan('combined')); // Usa 'combined' para un log detallado
+app.use(morgan('combined'));
 
 app.use(express.json()); // Parseo de JSON
 app.use(express.urlencoded({ extended: true }));
@@ -91,7 +80,6 @@ app.get('/api/generar-imagen', (req, res) => {
 });
 
 // Rutas de la API
-
 app.get('/', (req, res) => {
     res.send('Backend funcionando');
 });
