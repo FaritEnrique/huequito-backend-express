@@ -13,8 +13,8 @@ import authRoutes from './routes/authRoutes.js';
 import productoRoutes from './routes/productoRoutes.js';
 import marcaRoutes from './routes/marcaRoutes.js';
 import tipoProductoRoutes from './routes/tipoProductoRoutes.js';
-import { createCanvas } from 'canvas';  // Importa la librería canvas
-import morgan from 'morgan';  // Importa morgan para el logging
+import { createCanvas } from 'canvas';  // Importa la librería canvas
+import morgan from 'morgan';  // Importa morgan para el logging
 
 // Fuerza UTF-8 para la consola
 process.stdout.write('\uFEFF');
@@ -45,26 +45,34 @@ app.use(helmet()); // Comentado temporalmente para descartar conflictos
 // 🌐 Encabezados de seguridad adicionales
 /* Estos encabezados pueden generar conflictos si se cargan recursos externos
 app.use((req, res, next) => {
-  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
-  res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
-  next();
+  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+  res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
+  next();
 });
 */
 
-// Configuración de CORS para restringir accesos
-const corsOptions = {
-  origin: [
-    'https://el-huequito.netlify.app',
-    'http://localhost:3000',
-    'https://backendhuequito.com',
-    'https://api.backendhuequito.com'
-  ], // Dominios permitidos
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
+// Configuración de CORS para restringir accesos *MEJORADA*
+const allowedOrigins = process.env.NODE_ENV === 'production' ? [
+  'https://el-huequito.netlify.app', // Origen de producción
+  'https://www.el-huequito.netlify.app' // Con www
+] : [
+  'http://localhost:5173', // Origen de desarrollo
+  'http://localhost:3000' // Si usas otro puerto en local
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.error("CORS Error: Origin not allowed:", origin); // Log para depuración
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'], // Métodos permitidos (Añadido OPTIONS y PATCH)
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept'], // Headers permitidos
   credentials: true, // Permitir cookies o credenciales
-};
-
-app.use(cors(corsOptions)); // Aplica la configuración de CORS
+}));
 
 // Middleware de logging con morgan
 app.use(morgan('combined')); // Usa 'combined' para un log detallado
@@ -76,10 +84,10 @@ app.use(express.urlencoded({ extended: true }));
 app.get('/api/generar-imagen', (req, res) => {
   const canvas = createCanvas(500, 500);
   const ctx = canvas.getContext('2d');
-
+  
   ctx.fillStyle = 'blue';
   ctx.fillRect(10, 10, 100, 100);
-
+  
   res.setHeader('Content-Type', 'image/png');
   res.send(canvas.toBuffer('image/png'));
 });
