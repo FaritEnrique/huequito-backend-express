@@ -101,7 +101,7 @@ app.use((req, res, next) => {
 
 // Middleware global para manejar errores
 app.use((err, req, res, next) => {
-    console.error(" ERROR:", err.stack);
+    console.error("ERROR:", err.stack);
     res.status(err.status || 500).json({
         success: false,
         message: err.message || 'Algo salió mal en el servidor',
@@ -110,6 +110,5 @@ app.use((err, req, res, next) => {
 
 // Inicializa el servidor
 app.listen(port, '0.0.0.0', () => {
-    console.log(`Mi Backend está funcionando `);
-    console.log(`http://localhost:${port}/`);
+    console.log(`Servidor corriendo en http://localhost:${port}/`);
 });

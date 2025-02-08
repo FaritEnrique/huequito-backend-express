@@ -1,3 +1,5 @@
+// controllers/promocionesController.js
+
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
@@ -6,34 +8,55 @@ const crearPromocion = async (req, res) => {
   const { titulo, descripcion, fecha_inicio, fecha_termino, imagen_url, creado_por, is_active } = req.body;
 
   try {
-    // Validaciones personalizadas
-    if (new Date(fecha_termino) < new Date(fecha_inicio)) {
+    // Verificar que todos los campos requeridos estén presentes
+    if (!titulo || !descripcion || !fecha_inicio || !fecha_termino || !imagen_url || !creado_por) {
+      return res.status(400).json({ error: 'Todos los campos son obligatorios' });
+    }
+
+    // Validar formato de fechas
+    const inicio = new Date(fecha_inicio);
+    const termino = new Date(fecha_termino);
+
+    if (isNaN(inicio.getTime()) || isNaN(termino.getTime())) {
+      return res.status(400).json({ error: 'Formato de fecha inválido' });
+    }
+
+    if (termino < inicio) {
       return res.status(400).json({ error: 'La fecha de término no puede ser anterior a la fecha de inicio.' });
     }
-    
-    if (new Date(fecha_inicio) < new Date()) {
+
+    if (inicio < new Date()) {
       return res.status(400).json({ error: 'La fecha de inicio no puede estar en el pasado.' });
     }
 
-    // Convertir el valor de is_active en un valor booleano
-    const activeStatus = is_active === 'true' || is_active === true; // Convierte a booleano
+    // Verificar si el título ya existe
+    const existePromocion = await prisma.promociones.findUnique({
+      where: { titulo }
+    });
+
+    if (existePromocion) {
+      return res.status(400).json({ error: 'Ya existe una promoción con ese título.' });
+    }
+
+    // Convertir `is_active` a booleano con un valor por defecto
+    const activeStatus = is_active === 'true' || is_active === true ? true : false;
 
     const promocion = await prisma.promociones.create({
       data: {
         titulo,
         descripcion,
-        fecha_inicio: new Date(fecha_inicio),
-        fecha_termino: new Date(fecha_termino),
+        fecha_inicio: inicio,
+        fecha_termino: termino,
         imagen_url,
         creado_por,
-        is_active: activeStatus, // Usar el valor booleano
+        is_active: activeStatus
       },
     });
 
     return res.status(201).json(promocion);
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: 'Error al crear la promoción' });
+    console.error('Error en crearPromocion:', error);
+    return res.status(500).json({ error: 'Error al crear la promoción', detalle: error.message });
   }
 };
 
@@ -43,7 +66,7 @@ const obtenerPromociones = async (req, res) => {
     const promociones = await prisma.promociones.findMany();
     return res.status(200).json(promociones);
   } catch (error) {
-    console.error(error);
+    console.error('Error en obtenerPromociones:', error);
     return res.status(500).json({ error: 'Error al obtener las promociones' });
   }
 };
@@ -60,7 +83,7 @@ const obtenerPromocionPorId = async (req, res) => {
     }
     return res.status(200).json(promocion);
   } catch (error) {
-    console.error(error);
+    console.error('Error en obtenerPromocionPorId:', error);
     return res.status(500).json({ error: 'Error al obtener la promoción' });
   }
 };
@@ -71,34 +94,36 @@ const actualizarPromocion = async (req, res) => {
   const { titulo, descripcion, fecha_inicio, fecha_termino, imagen_url, is_active } = req.body;
 
   try {
-    // Validaciones personalizadas
-    if (new Date(fecha_termino) < new Date(fecha_inicio)) {
-      return res.status(400).json({ error: 'La fecha de término no puede ser anterior a la fecha de inicio.' });
-    }
-    
-    if (new Date(fecha_inicio) < new Date()) {
-      return res.status(400).json({ error: 'La fecha de inicio no puede estar en el pasado.' });
+    if (!titulo || !descripcion || !fecha_inicio || !fecha_termino || !imagen_url) {
+      return res.status(400).json({ error: 'Todos los campos son obligatorios' });
     }
 
-    // Convertir el valor de is_active en un valor booleano
-    const activeStatus = is_active === 'true' || is_active === true; // Convierte a booleano
+    const inicio = new Date(fecha_inicio);
+    const termino = new Date(fecha_termino);
+
+    if (termino < inicio) {
+      return res.status(400).json({ error: 'La fecha de término no puede ser anterior a la fecha de inicio.' });
+    }
+
+    // Convertir `is_active` a booleano
+    const activeStatus = is_active === 'true' || is_active === true ? true : false;
 
     const promocion = await prisma.promociones.update({
       where: { id: parseInt(id) },
       data: {
         titulo,
         descripcion,
-        fecha_inicio: new Date(fecha_inicio),
-        fecha_termino: new Date(fecha_termino),
+        fecha_inicio: inicio,
+        fecha_termino: termino,
         imagen_url,
-        is_active: activeStatus, // Usar el valor booleano
+        is_active: activeStatus
       },
     });
 
     return res.status(200).json(promocion);
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: 'Error al actualizar la promoción' });
+    console.error('Error en actualizarPromocion:', error);
+    return res.status(500).json({ error: 'Error al actualizar la promoción', detalle: error.message });
   }
 };
 
@@ -111,8 +136,8 @@ const eliminarPromocion = async (req, res) => {
     });
     return res.status(200).json({ message: 'Promoción eliminada correctamente' });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: 'Error al eliminar la promoción' });
+    console.error('Error en eliminarPromocion:', error);
+    return res.status(500).json({ error: 'Error al eliminar la promoción', detalle: error.message });
   }
 };
 
