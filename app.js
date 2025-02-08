@@ -31,47 +31,46 @@ const port = process.env.PORT || 8080;
 // Confía en el proxy de AWS Elastic Beanstalk
 app.enable('trust proxy');
 
-// 🔐 Middleware para redirigir de HTTP a HTTPS
+//  Middleware para redirigir de HTTP a HTTPS
 app.use((req, res, next) => {
-  if (process.env.FORCE_HTTPS === 'true' && !req.secure) {
-    return res.redirect(`https://${req.headers.host}${req.url}`);
-  }
-  next();
+    if (process.env.FORCE_HTTPS === 'true' && !req.secure) {
+        return res.redirect(`https://${req.headers.host}${req.url}`);
+    }
+    next();
 });
 
-// 🛡️ Middleware de seguridad
+// ️ Middleware de seguridad
 app.use(helmet()); // Comentado temporalmente para descartar conflictos
 
-// 🌐 Encabezados de seguridad adicionales
+//  Encabezados de seguridad adicionales
 /* Estos encabezados pueden generar conflictos si se cargan recursos externos
 app.use((req, res, next) => {
-  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
-  res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
-  next();
+    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+    res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
+    next();
 });
 */
 
 // Configuración de CORS para restringir accesos *MEJORADA*
 const allowedOrigins = process.env.NODE_ENV === 'production' ? [
-  'https://el-huequito.netlify.app', // Origen de producción
-  'https://www.el-huequito.netlify.app' // Con www
+    'https://el-huequito.netlify.app', // Origen de producción
+    'https://www.el-huequito.netlify.app' // Con www
 ] : [
-  'http://localhost:5173', // Origen de desarrollo
-  'http://localhost:3000' // Si usas otro puerto en local
+    '*' // Origen comodín SOLO en desarrollo
 ];
 
 app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      console.error("CORS Error: Origin not allowed:", origin); // Log para depuración
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'], // Métodos permitidos (Añadido OPTIONS y PATCH)
-  allowedHeaders: ['Content-Type', 'Authorization', 'Accept'], // Headers permitidos
-  credentials: true, // Permitir cookies o credenciales
+    origin: function (origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            console.error("CORS Error: Origin not allowed:", origin); // Log para depuración
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'], // Métodos permitidos (Añadido OPTIONS y PATCH)
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'], // Headers permitidos
+    credentials: true, // Permitir cookies o credenciales
 }));
 
 // Middleware de logging con morgan
@@ -82,20 +81,20 @@ app.use(express.urlencoded({ extended: true }));
 
 // Ruta para generar una imagen dinámica con canvas
 app.get('/api/generar-imagen', (req, res) => {
-  const canvas = createCanvas(500, 500);
-  const ctx = canvas.getContext('2d');
-  
-  ctx.fillStyle = 'blue';
-  ctx.fillRect(10, 10, 100, 100);
-  
-  res.setHeader('Content-Type', 'image/png');
-  res.send(canvas.toBuffer('image/png'));
+    const canvas = createCanvas(500, 500);
+    const ctx = canvas.getContext('2d');
+
+    ctx.fillStyle = 'blue';
+    ctx.fillRect(10, 10, 100, 100);
+
+    res.setHeader('Content-Type', 'image/png');
+    res.send(canvas.toBuffer('image/png'));
 });
 
 // Rutas de la API
 
 app.get('/', (req, res) => {
-  res.send('Backend funcionando');
+    res.send('Backend funcionando');
 });
 
 app.use('/api/clientes', clientesRoutes);
@@ -110,20 +109,20 @@ app.use('/api/tipo-productos', tipoProductoRoutes);
 
 // Middleware para rutas no encontradas
 app.use((req, res, next) => {
-  res.status(404).json({ message: 'Ruta no encontrada' });
+    res.status(404).json({ message: 'Ruta no encontrada' });
 });
 
 // Middleware global para manejar errores
 app.use((err, req, res, next) => {
-  console.error("🔥 ERROR:", err.stack);
-  res.status(err.status || 500).json({
-    success: false,
-    message: err.message || 'Algo salió mal en el servidor',
-  });
+    console.error(" ERROR:", err.stack);
+    res.status(err.status || 500).json({
+        success: false,
+        message: err.message || 'Algo salió mal en el servidor',
+    });
 });
 
 // Inicializa el servidor
 app.listen(port, '0.0.0.0', () => {
-  console.log(`Mi Backend está funcionando 🔥🎉🦾`);
-  console.log(`http://localhost:${port}/`);
+    console.log(`Mi Backend está funcionando `);
+    console.log(`http://localhost:${port}/`);
 });
