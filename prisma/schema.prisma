@@ -11,7 +11,7 @@ datasource db {
 model clientes {
   id        Int    @id @default(autoincrement())
   nombre    String @db.VarChar(255)
-  dni       String @unique @db.VarChar(9)
+  dni       String @unique @db.VarChar(8)
   direccion String @db.VarChar(100)
   celular   String @db.VarChar(13)
   correo    String @unique @db.VarChar(50)
