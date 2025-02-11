@@ -9,6 +9,11 @@ const validarDNI = (dni) => /^\d{8}$/.test(dni);
 // Crear un nuevo cliente
 export const crearCliente = async (req, res) => {
     console.log("Datos recibidos en el backend:", req.body);
+    const { error } = esquemaCliente.validate(req.body);
+    if (error) {
+        console.log("Error de validación:", error.details[0].message); // 👀 Ver qué falla
+        return res.status(400).json({ mensaje: error.details[0].message });
+    }
     try {
         let { nombre, dni, direccion, celular, correo, condicion } = req.body;
 
