@@ -23,7 +23,8 @@ const clienteSchema = Joi.object({
     }),
 
     direccion: Joi.string().required().pattern(/^[\p{L}0-9\s°.,#-]+$/u).messages({
-        'string.pattern.base': 'La dirección solo puede contener letras, números, espacios y los caracteres ° , . # -',
+        'string.base': 'La dirección debe ser una cadena de texto.',
+        'string.pattern.base': 'La dirección solo puede contener letras, números y los caracteres ° , . # -',
         'any.required': 'La dirección es obligatoria.',
     }),
 
