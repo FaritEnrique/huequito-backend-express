@@ -18,7 +18,7 @@ export default validarCliente;*/
 
 import clientesSchema from '../schemas/clientesSchema.js';
 
-export const validarCliente = (req, res, next) => {
+const validarCliente = (req, res, next) => {
   const { error } = clientesSchema.validate(req.body, { abortEarly: false });
   if (error) {
     console.error("Errores de validación:", error.details);
@@ -26,3 +26,5 @@ export const validarCliente = (req, res, next) => {
   }
   next();
 };
+
+export default validarCliente;
