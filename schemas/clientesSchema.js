@@ -1,3 +1,5 @@
+// schemas/clientesSchema.js
+
 import Joi from 'joi';
 
 // Definición de las validaciones para el cliente
@@ -13,9 +15,9 @@ const clienteSchema = Joi.object({
         'string.base': 'El nombre debe ser una cadena de texto.',
     }),
 
-    dni: Joi.string().length(9).pattern(/^\d+$/).required().messages({
+    dni: Joi.string().length(8).pattern(/^\d{8}$/).required().messages({
         'string.base': 'El DNI debe ser una cadena de texto.',
-        'string.length': 'El DNI debe tener exactamente 9 caracteres.',
+        'string.length': 'El DNI debe tener exactamente 8 dígitos.',
         'string.pattern.base': 'El DNI debe contener solo números.',
         'any.required': 'El DNI es obligatorio.',
     }),
@@ -37,7 +39,7 @@ const clienteSchema = Joi.object({
     }),
 
     condicion: Joi.string().valid('Maestro de Obra', 'Dueño de Obra', 'Pintor', 'Otro').required().messages({
-        'string.valid': 'La condición debe ser una de las siguientes: Maestro de Obra, Dueño de Obra, Pintor, Otro.',
+        'any.only': 'La condición debe ser una de las siguientes: Maestro de Obra, Dueño de Obra, Pintor, Otro.',
         'any.required': 'La condición es obligatoria.',
     }),
 });

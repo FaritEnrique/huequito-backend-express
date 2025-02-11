@@ -1,26 +1,30 @@
 // controllers/clienteController.js
 import { PrismaClient } from '@prisma/client';
 
-// Inicializa Prisma Client
 const prismaClient = new PrismaClient();
+
+// Función para validar que el DNI tenga exactamente 8 dígitos
+const validarDNI = (dni) => /^\d{8}$/.test(dni);
 
 // Crear un nuevo cliente
 export const crearCliente = async (req, res) => {
     try {
         const { nombre, dni, direccion, celular, correo, condicion } = req.body;
+
+        if (!validarDNI(dni)) {
+            return res.status(400).json({ error: 'El DNI debe tener exactamente 8 dígitos numéricos.' });
+        }
+
         const cliente = await prismaClient.clientes.create({
-            data: {
-                nombre,
-                dni,
-                direccion,
-                celular,
-                correo,
-                condicion,
-            },
+            data: { nombre, dni, direccion, celular, correo, condicion },
         });
-        return res.status(201).json(cliente); // Respuesta con el cliente creado
+
+        return res.status(201).json(cliente);
     } catch (error) {
-        console.error(error);
+        console.error("Error en crearCliente:", error);
+        if (error.code === "P2002") {
+            return res.status(400).json({ error: `El campo ${error.meta.target} ya está en uso.` });
+        }
         return res.status(500).json({ error: 'Error al crear el cliente' });
     }
 };
@@ -31,7 +35,7 @@ export const obtenerClientes = async (req, res) => {
         const clientes = await prismaClient.clientes.findMany();
         return res.status(200).json(clientes);
     } catch (error) {
-        console.error(error);
+        console.error("Error en obtenerClientes:", error);
         return res.status(500).json({ error: 'Error al obtener los clientes' });
     }
 };
@@ -41,16 +45,14 @@ export const obtenerClientePorId = async (req, res) => {
     const { id } = req.params;
     try {
         const cliente = await prismaClient.clientes.findUnique({
-            where: {
-                id: parseInt(id),
-            },
+            where: { id: parseInt(id) },
         });
         if (!cliente) {
             return res.status(404).json({ error: 'Cliente no encontrado' });
         }
         return res.status(200).json(cliente);
     } catch (error) {
-        console.error(error);
+        console.error("Error en obtenerClientePorId:", error);
         return res.status(500).json({ error: 'Error al obtener el cliente' });
     }
 };
@@ -61,7 +63,6 @@ export const actualizarCliente = async (req, res) => {
     const { nombre, dni, direccion, celular, correo, condicion } = req.body;
 
     try {
-        // Verificar si el cliente con el ID dado existe
         const clienteExistente = await prismaClient.clientes.findUnique({
             where: { id: parseInt(id) },
         });
@@ -70,15 +71,23 @@ export const actualizarCliente = async (req, res) => {
             return res.status(404).json({ error: 'Cliente no encontrado.' });
         }
 
-        // Actualizar el cliente sin verificar el celular duplicado
+        if (dni && !validarDNI(dni)) {
+            return res.status(400).json({ error: 'El DNI debe tener exactamente 8 dígitos numéricos.' });
+        }
+
+        const dataActualizacion = { nombre, dni, direccion, celular, correo, condicion };
+
         const clienteActualizado = await prismaClient.clientes.update({
             where: { id: parseInt(id) },
-            data: { nombre, dni, direccion, celular, correo, condicion },
+            data: dataActualizacion,
         });
 
         return res.status(200).json(clienteActualizado);
     } catch (error) {
         console.error("Error en actualizarCliente:", error);
+        if (error.code === "P2002") {
+            return res.status(400).json({ error: `El campo ${error.meta.target} ya está en uso.` });
+        }
         return res.status(500).json({ error: 'Error al actualizar el cliente' });
     }
 };
@@ -87,12 +96,10 @@ export const actualizarCliente = async (req, res) => {
 export const eliminarCliente = async (req, res) => {
     const { id } = req.params;
     try {
-        await prismaClient.clientes.delete({
-            where: { id: parseInt(id) },
-        });
+        await prismaClient.clientes.delete({ where: { id: parseInt(id) } });
         return res.status(200).json({ message: 'Cliente eliminado correctamente' });
     } catch (error) {
-        console.error(error);
+        console.error("Error en eliminarCliente:", error);
         return res.status(500).json({ error: 'Error al eliminar el cliente' });
     }
 };
