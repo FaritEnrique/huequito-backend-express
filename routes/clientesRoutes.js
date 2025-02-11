@@ -1,6 +1,6 @@
 // routes/clientesRoutes.js
 import express from 'express';
-import clienteController from '../controllers/clienteController.js';
+import * as clienteController from '../controllers/clienteController.js';
 import validarCliente from '../middlewares/validarCliente.js';
 
 const router = express.Router();
