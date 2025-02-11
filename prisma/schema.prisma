@@ -13,7 +13,7 @@ model clientes {
   nombre    String @db.VarChar(255)
   dni       String @unique @db.VarChar(8)
   direccion String @db.VarChar(100)
-  celular   String @db.VarChar(9)
+  celular   String @db.VarChar(13)
   correo    String @unique @db.VarChar(50)
   condicion String @db.VarChar(20)
 }
@@ -31,13 +31,13 @@ model mensajes {
   fecha        DateTime @default(now()) @db.Timestamp(6)
   comunicacion String   @db.VarChar(30)
   mensaje      String
-  response     String? @db.Text
+  response     String?
 }
 
 model preguntas {
   id        Int    @id @default(autoincrement())
-  pregunta  String @db.Text
-  respuesta String @db.Text
+  pregunta  String
+  respuesta String
 }
 
 model promociones {
@@ -54,48 +54,48 @@ model promociones {
 }
 
 model User {
-  id           String   @id @default(cuid())
+  id           String    @id @default(cuid())
   name         String
-  email        String   @unique
+  email        String    @unique
   password     String
-  resetToken   String?  // Token de recuperación
-  resetExpires DateTime? // Fecha de expiración del token
+  resetToken   String?
+  resetExpires DateTime?
 }
 
 model Producto {
-  id              Int                @id @default(autoincrement())
-  nombre          String
-  descripcion     String?
-  precio          Float
-  activo          Boolean            @default(true)
-  imagenUrl       String?            // Campo para la URL de la imagen del producto
-  marcaId         Int
-  tipoProductoId  Int
-  marca           Marca              @relation(fields: [marcaId], references: [id])
-  tipoProducto    TipoProducto       @relation(fields: [tipoProductoId], references: [id])
-  createdAt       DateTime           @default(now())
-  updatedAt       DateTime           @updatedAt
+  id             Int          @id @default(autoincrement())
+  nombre         String
+  descripcion    String?
+  precio         Float
+  activo         Boolean      @default(true)
+  imagenUrl      String?
+  marcaId        Int
+  tipoProductoId Int
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  marca          Marca        @relation(fields: [marcaId], references: [id])
+  tipoProducto   TipoProducto @relation(fields: [tipoProductoId], references: [id])
 }
 
 model Marca {
-  id        Int         @id @default(autoincrement())
-  nombre    String      @unique
-  productos Producto[]  // Una marca puede tener múltiples productos
-  tipoProductosMarca TipoProductoMarca[] // Relación muchos a muchos con TipoProducto
+  id                 Int                 @id @default(autoincrement())
+  nombre             String              @unique
+  productos          Producto[]
+  tipoProductosMarca TipoProductoMarca[]
 }
 
 model TipoProducto {
-  id        Int         @id @default(autoincrement())
-  nombre    String      @unique
-  productos Producto[]  // Un tipo de producto puede estar asociado a múltiples productos
-  marcas TipoProductoMarca[] // Relación muchos a muchos con Marca
+  id        Int                 @id @default(autoincrement())
+  nombre    String              @unique
+  productos Producto[]
+  marcas    TipoProductoMarca[]
 }
 
 model TipoProductoMarca {
-  marcaId       Int
+  marcaId        Int
   tipoProductoId Int
-  marca         Marca        @relation(fields: [marcaId], references: [id])
-  tipoProducto  TipoProducto @relation(fields: [tipoProductoId], references: [id])
+  marca          Marca        @relation(fields: [marcaId], references: [id])
+  tipoProducto   TipoProducto @relation(fields: [tipoProductoId], references: [id])
 
-  @@id([marcaId, tipoProductoId]) // Definir como clave primaria compuesta
+  @@id([marcaId, tipoProductoId])
 }
