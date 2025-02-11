@@ -22,16 +22,16 @@ const clienteSchema = Joi.object({
         'any.required': 'El DNI es obligatorio.',
     }),
 
-    direccion: Joi.string().required().pattern(/^[A-Za-z0-9\s]+$/).messages({
-        'string.base': 'La dirección debe ser una cadena de texto.',
-        'string.pattern.base': 'La dirección no puede contener caracteres especiales.',
+    direccion: Joi.string().required().pattern(/^[\p{L}0-9\s°.,#-]+$/u).messages({
+        'string.pattern.base': 'La dirección solo puede contener letras, números, espacios y los caracteres ° , . # -',
         'any.required': 'La dirección es obligatoria.',
     }),
 
-    celular: Joi.string().pattern(/^\+51\d{9}$/).required().messages({
-        'string.pattern.base': 'El celular debe tener el formato +51 seguido de 9 dígitos.',
-        'any.required': 'El celular es obligatorio.',
+    celular: Joi.string().pattern(/^\+?51?\d{9}$/).required().messages({
+    'string.pattern.base': 'El celular debe ser un número de 9 dígitos, con o sin prefijo +51.',
+    'any.required': 'El celular es obligatorio.',
     }),
+
 
     correo: Joi.string().email().required().messages({
         'string.email': 'Ingrese un correo electrónico válido.',
