@@ -8,11 +8,17 @@ const validarDNI = (dni) => /^\d{8}$/.test(dni);
 
 // Crear un nuevo cliente
 export const crearCliente = async (req, res) => {
+    console.log("Datos recibidos en el backend:", req.body);
     try {
-        const { nombre, dni, direccion, celular, correo, condicion } = req.body;
+        let { nombre, dni, direccion, celular, correo, condicion } = req.body;
 
         if (!validarDNI(dni)) {
             return res.status(400).json({ error: 'El DNI debe tener exactamente 8 dígitos numéricos.' });
+        }
+
+        // Verificar si el celular ya tiene el prefijo +51, si no, lo agregamos
+        if (celular && !celular.startsWith('+51')) {
+            celular = `+51${celular}`;
         }
 
         const cliente = await prisma.clientes.create({
@@ -60,7 +66,7 @@ export const obtenerClientePorId = async (req, res) => {
 // Actualizar un cliente por ID
 export const actualizarCliente = async (req, res) => {
     const { id } = req.params;
-    const { nombre, dni, direccion, celular, correo, condicion } = req.body;
+    let { nombre, dni, direccion, celular, correo, condicion } = req.body;
 
     try {
         const clienteExistente = await prisma.clientes.findUnique({
@@ -73,6 +79,11 @@ export const actualizarCliente = async (req, res) => {
 
         if (dni && !validarDNI(dni)) {
             return res.status(400).json({ error: 'El DNI debe tener exactamente 8 dígitos numéricos.' });
+        }
+
+        // Verificar si el celular ya tiene el prefijo +51, si no, lo agregamos
+        if (celular && !celular.startsWith('+51')) {
+            celular = `+51${celular}`;
         }
 
         // Verificamos si los valores únicos (DNI y correo) han cambiado antes de actualizar
