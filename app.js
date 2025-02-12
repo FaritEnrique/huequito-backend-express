@@ -50,6 +50,7 @@ const allowedOrigins = process.env.NODE_ENV === 'production' ? [
 
 app.use(cors({
     origin: function (origin, callback) {
+        console.log("Solicitando desde origin:", origin);
         if (!origin || allowedOrigins.includes(origin) || process.env.NODE_ENV !== 'production') {
             callback(null, true);
         } else {

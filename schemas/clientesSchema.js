@@ -24,10 +24,12 @@ const clienteSchema = Joi.object({
         'any.required': 'La dirección es obligatoria.',
     }),
 
-    celular: Joi.string().length(9).pattern(/^\d{9}$/).required().messages({
+    celular: Joi.string()
+        .pattern(/^(\+51\d{9}|\d{9})$/)
+        .required()
+        .messages({
         'string.base': 'El celular debe ser una cadena de texto.',
-        'string.length': 'El celular debe tener exactamente 9 dígitos.',
-        'string.pattern.base': 'El celular debe contener solo números.',
+        'string.pattern.base': 'El celular debe tener 9 dígitos o comenzar con +51 seguido de 9 dígitos.',
         'any.required': 'El celular es obligatorio.',
     }),
 
