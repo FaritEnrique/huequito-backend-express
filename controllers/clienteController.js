@@ -20,6 +20,9 @@ export const crearCliente = async (req, res) => {
     console.log("Datos recibidos en el backend:", req.body);
     let { nombre, dni, direccion, celular, correo, condicion } = req.body;
 
+    // Asegurar que el DNI tenga 8 caracteres, incluso si comienza con "0"
+    dni = dni ? String(dni).padStart(8, "0") : null;
+    
     if (!validarDNI(dni)) {
         return res.status(400).json({ error: 'El DNI debe tener exactamente 8 dígitos numéricos.' });
     }
@@ -87,21 +90,45 @@ export const actualizarCliente = async (req, res) => {
     let { nombre, dni, direccion, celular, correo, condicion } = req.body;
 
     try {
+        // Verificar si el cliente existe
         const clienteExistente = await prisma.clientes.findUnique({ where: { id } });
         if (!clienteExistente) {
             return res.status(404).json({ error: 'Cliente no encontrado.' });
         }
 
-        if (dni && !validarDNI(dni)) {
+        // Asegurar que el DNI tenga 8 caracteres, incluso si comienza con "0"
+        dni = dni ? String(dni).padStart(8, "0") : clienteExistente.dni;
+
+        // Validar formato del DNI
+        if (!validarDNI(dni)) {
             return res.status(400).json({ error: 'El DNI debe tener exactamente 8 dígitos numéricos.' });
         }
 
+        // Normalizar celular
         celular = normalizarCelular(celular);
 
-        const dataActualizacion = { nombre, direccion, celular, condicion };
+        // Validar datos con Joi
+        const { error } = esquemaCliente.validate({ nombre, dni, direccion, celular, correo, condicion });
+        if (error) {
+            console.error("Error de validación:", error.details[0].message);
+            return res.status(400).json({ mensaje: error.details[0].message });
+        }
+
+        // Preparar datos a actualizar
+        const dataActualizacion = {};
+        if (nombre) dataActualizacion.nombre = nombre;
+        if (direccion) dataActualizacion.direccion = direccion;
+        if (celular) dataActualizacion.celular = celular;
+        if (condicion !== undefined) dataActualizacion.condicion = condicion;
         if (dni && dni !== clienteExistente.dni) dataActualizacion.dni = dni;
         if (correo && correo !== clienteExistente.correo) dataActualizacion.correo = correo;
 
+        // Evitar actualizaciones vacías
+        if (Object.keys(dataActualizacion).length === 0) {
+            return res.status(400).json({ error: 'No se han proporcionado datos para actualizar.' });
+        }
+
+        // Actualizar en la base de datos
         const clienteActualizado = await prisma.clientes.update({
             where: { id },
             data: dataActualizacion,
