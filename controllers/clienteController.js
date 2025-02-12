@@ -81,6 +81,7 @@ export const obtenerClientePorId = async (req, res) => {
 
 // Actualizar un cliente por ID
 export const actualizarCliente = async (req, res) => {
+  console.log("Datos recibidos en el backend:", req.body);
   const id = parseInt(req.params.id);
   if (isNaN(id) || id <= 0) {
     return res.status(400).json({ error: "ID de cliente inválido." });
@@ -101,6 +102,8 @@ export const actualizarCliente = async (req, res) => {
     }
 
     celular = normalizarCelular(celular);
+
+    console.log("Datos después de normalizar:", { nombre, dni, direccion, celular, correo, condicion });
 
     const { error } = esquemaCliente.validate({ nombre, dni, direccion, celular, correo, condicion });
     if (error) {
