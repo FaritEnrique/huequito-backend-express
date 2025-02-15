@@ -67,8 +67,7 @@ const obtenerMensajePorId = async (req, res) => {
 // Actualizar un mensaje por ID
 const actualizarMensaje = async (req, res) => {
   const { id } = req.params;
-  const { response } = req.body;
-  let { nombre, celular, correo, comunicacion, mensaje } = response;
+  let { nombre, celular, correo, comunicacion, mensaje } = req.body;
 
   try {
     // Verificar si el celular tiene el prefijo +51, si no lo tiene, agregarlo
