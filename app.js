@@ -93,7 +93,7 @@ app.use('/api/promociones', promocionesRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/productos', productoRoutes);
 app.use('/api/marcas', marcaRoutes);
-app.use('/api/tipo-productos', tipoProductoRoutes);
+app.use('/api/tipos-producto', tipoProductoRoutes);
 
 // Middleware para rutas no encontradas
 app.use((req, res, next) => {

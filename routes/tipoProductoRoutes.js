@@ -1,3 +1,5 @@
+// routes/tipoProductoRoutes.js
+
 import express from 'express';
 import {
   crearTipoProductoController,

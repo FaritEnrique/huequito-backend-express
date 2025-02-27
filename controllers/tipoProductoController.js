@@ -1,3 +1,5 @@
+// controller/tipoProductoController.js
+
 import { 
   crearTipoProducto, 
   obtenerTiposProducto, 
@@ -27,7 +29,12 @@ export const obtenerTiposProductoController = async (req, res) => {
 
 export const obtenerTipoProductoPorIdController = async (req, res) => {
   try {
-    const { id } = req.params;
+    const id = Number(req.params.id); // 🔥 Convertir id a número
+
+    if (isNaN(id)) {
+      return res.status(400).json({ message: 'ID inválido, debe ser un número' });
+    }
+
     const tipoProducto = await obtenerTipoProductoPorId(id);
     if (!tipoProducto) return res.status(404).json({ message: 'Tipo de producto no encontrado' });
     res.status(200).json(tipoProducto);
@@ -38,8 +45,13 @@ export const obtenerTipoProductoPorIdController = async (req, res) => {
 
 export const actualizarTipoProductoController = async (req, res) => {
   try {
-    const { id } = req.params;
+    const id = Number(req.params.id); // 🔥 Convertir id a número
     const { nombre } = req.body;
+
+    if (isNaN(id)) {
+      return res.status(400).json({ message: 'ID inválido, debe ser un número' });
+    }
+
     const tipoProducto = await actualizarTipoProducto(id, { nombre });
     if (!tipoProducto) return res.status(404).json({ message: 'Tipo de producto no encontrado' });
     res.status(200).json(tipoProducto);
@@ -50,7 +62,12 @@ export const actualizarTipoProductoController = async (req, res) => {
 
 export const eliminarTipoProductoController = async (req, res) => {
   try {
-    const { id } = req.params;
+    const id = Number(req.params.id); // 🔥 Convertir id a número
+
+    if (isNaN(id)) {
+      return res.status(400).json({ message: 'ID inválido, debe ser un número' });
+    }
+
     const tipoProducto = await eliminarTipoProducto(id);
     if (!tipoProducto) return res.status(404).json({ message: 'Tipo de producto no encontrado' });
     res.status(200).json({ message: 'Tipo de producto eliminado' });

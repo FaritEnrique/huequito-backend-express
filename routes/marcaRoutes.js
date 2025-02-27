@@ -1,3 +1,5 @@
+// routes/marcaRoutes.js
+
 import express from 'express';
 import {
   crearMarcaController,
@@ -10,18 +12,18 @@ import {
 const router = express.Router();
 
 // Ruta para crear una marca
-router.post('/marcas', crearMarcaController);
+router.post('/', crearMarcaController);
 
 // Ruta para obtener todas las marcas
-router.get('/marcas', obtenerMarcasController);
+router.get('/', obtenerMarcasController);
 
 // Ruta para obtener una marca por ID
-router.get('/marcas/:id', obtenerMarcaPorIdController);
+router.get('/:id', obtenerMarcaPorIdController);
 
 // Ruta para actualizar una marca
-router.put('/marcas/:id', actualizarMarcaController);
+router.put('/:id', actualizarMarcaController);
 
 // Ruta para eliminar una marca
-router.delete('/marcas/:id', eliminarMarcaController);
+router.delete('/:id', eliminarMarcaController);
 
 export default router;
