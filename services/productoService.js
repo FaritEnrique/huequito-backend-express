@@ -16,7 +16,12 @@ export const createProducto = async (data) => {
 
 export const getProductos = async () => {
   try {
-    const productos = await prisma.producto.findMany();
+    const productos = await prisma.producto.findMany({
+      include: {
+        marca: true,
+        tipoProducto: true,
+      },
+    });
     return productos;
   } catch (error) {
     throw new Error('Error fetching products: ' + error.message);
@@ -27,6 +32,10 @@ export const getProductoById = async (id) => {
   try {
     const producto = await prisma.producto.findUnique({
       where: { id },
+      include: {
+        marca: true,
+        tipoProducto: true,
+      },
     });
     return producto;
   } catch (error) {
@@ -39,6 +48,10 @@ export const updateProducto = async (id, data) => {
     const producto = await prisma.producto.update({
       where: { id },
       data,
+      include: {
+        marca: true,
+        tipoProducto: true,
+      },
     });
     return producto;
   } catch (error) {
