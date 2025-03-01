@@ -17,7 +17,12 @@ export const crearIdea = async (req, res) => {
 
 export const obtenerIdeas = async (req, res) => {
     try {
-        const ideas = await prisma.ideas.findMany();
+        const limit = parseInt(req.query.limit) || 10;
+        const offset = parseInt(req.query.offset) || 0;
+        const ideas = await prisma.ideas.findMany({
+            take: limit,
+            skip: offset,
+        });
         res.status(200).json(ideas);
     } catch (error) {
         console.error(error);

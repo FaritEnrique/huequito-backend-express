@@ -11,8 +11,6 @@ const crearPromocion = async (req, res) => {
 
   try {
 
-    //const inicio = moment(fecha_inicio, 'YYYY-MM-DD');
-    //const termino = moment(fecha_termino, 'YYYY-MM-DD')
     // Verificar que todos los campos requeridos estén presentes
     if (!titulo || !descripcion || !fecha_inicio || !fecha_termino || !imagen_url || !creado_por) {
       console.log("Validación fallida: campos obligatorios faltantes");
@@ -20,23 +18,40 @@ const crearPromocion = async (req, res) => {
     }
 
     // Validar formato de fechas
-    const inicio = new Date(fecha_inicio);
-    const termino = new Date(fecha_termino);
+    const inicio = moment(fecha_inicio, 'YYYY-MM-DD');
+    const termino = moment(fecha_termino, 'YYYY-MM-DD');
+    //const inicio = new Date(fecha_inicio);
+    //const termino = new Date(fecha_termino);
 
-    if (isNaN(inicio.getTime()) || isNaN(termino.getTime())) {
+    if (!inicio.isValid() || !termino.isValid()) {
       console.log("Validación fallida: formato de fecha inválido");
       return res.status(400).json({ error: 'Formato de fecha inválido' });
     }
 
-    if (termino < inicio) {
+    /*if (isNaN(inicio.getTime()) || isNaN(termino.getTime())) {
+      console.log("Validación fallida: formato de fecha inválido");
+      return res.status(400).json({ error: 'Formato de fecha inválido' });
+    }*/
+    
+    if (termino.isBefore(inicio)) {
       console.log("Validación fallida: fecha de término anterior a fecha de inicio");
       return res.status(400).json({ error: 'La fecha de término no puede ser anterior a la fecha de inicio.' });
     }
 
-    if (inicio < new Date()) {
+    /*if (termino < inicio) {
+      console.log("Validación fallida: fecha de término anterior a fecha de inicio");
+      return res.status(400).json({ error: 'La fecha de término no puede ser anterior a la fecha de inicio.' });
+    }*/
+
+    if (inicio.isBefore(moment().startOf('day'))) { // Compara con el inicio del día actual
       console.log("Validación fallida: fecha de inicio en el pasado");
       return res.status(400).json({ error: 'La fecha de inicio no puede estar en el pasado.' });
     }
+
+    /*if (inicio < new Date()) {
+      console.log("Validación fallida: fecha de inicio en el pasado");
+      return res.status(400).json({ error: 'La fecha de inicio no puede estar en el pasado.' });
+    }*/
 
     // Verificar si el título ya existe
     const existePromocion = await prisma.promociones.findUnique({
