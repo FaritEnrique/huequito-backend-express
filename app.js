@@ -26,7 +26,8 @@ dotenv.config();
 const app = express();
 
 // Puerto del servidor
-const port = process.env.PORT || 8080;
+const PORTS = [8080, 3000, 4000]; // Lista de puertos disponibles
+const port = process.env.PORT || PORTS.find(p => p); // Toma el primero disponible
 
 // Confía en el proxy de AWS Elastic Beanstalk
 app.enable('trust proxy');
