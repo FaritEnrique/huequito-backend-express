@@ -13,7 +13,7 @@ export const EMAIL_PASS = process.env.EMAIL_PASS;
 export const DATABASE_URL = process.env.DATABASE_URL;
 
 // Configuración del puerto
-export const PORT = process.env.PORT || 3000; // Usa el puerto definido en el .env o 3000 por defecto
+export const PORT = Number(process.env.PORT) || 3000; // Usa el puerto definido en el .env o 3000 por defecto
 
 // URL del frontend
-export const FRONTEND_URL = process.env.FRONTEND_URL;
+export const FRONTEND_URL = process.env.FRONTEND_URL?.split(',') || [];
