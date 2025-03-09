@@ -34,7 +34,7 @@ app.enable('trust proxy');
 
 //  Middleware para redirigir de HTTP a HTTPS
 app.use((req, res, next) => {
-    if (process.env.FORCE_HTTPS === 'true' && !req.secure) {
+    if (process.env.FORCE_HTTPS === 'true' && req.headers['x-forwarded-proto'] !== 'https') {
         return res.redirect(`https://${req.headers.host}${req.url}`);
     }
     next();
