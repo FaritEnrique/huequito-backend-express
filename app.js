@@ -26,15 +26,17 @@ dotenv.config();
 const app = express();
 
 // Puerto del servidor
-const PORTS = [8080, 3000, 4000]; // Lista de puertos disponibles
-const port = process.env.PORT || PORTS.find(p => p); // Toma el primero disponible
+const port = process.env.PORT || 8080; // Toma el primero disponible
 
 // Confía en el proxy de AWS Elastic Beanstalk
 app.enable('trust proxy');
 
 //  Middleware para redirigir de HTTP a HTTPS
 app.use((req, res, next) => {
-    if (process.env.FORCE_HTTPS === 'true' && req.headers['x-forwarded-proto'] !== 'https') {
+    if (process.env.FORCE_HTTPS === 'true' &&
+        req.headers['x-forwarded-proto'] !== 'https' &&
+        process.env.NODE_ENV === 'production'
+    ) {
         return res.redirect(`https://${req.headers.host}${req.url}`);
     }
     next();
@@ -44,19 +46,21 @@ app.use((req, res, next) => {
 app.use(helmet()); // Reactivado tras revisión
 
 // Configuración de CORS mejorada
-const allowedOrigins = process.env.NODE_ENV === 'production' ? [
-    'https://el-huequito.netlify.app', // Origen de producción
+const allowedOrigins = process.env.NODE_ENV === 'production'
+    ? [process.env.FRONTEND_URL_PROD] // Origen de producción
+    : [process.env.FRONTEND_URL_DEV]; // Origen de desarrollo
+    /*'https://el-huequito.netlify.app', // Origen de producción
     'https://www.el-huequito.netlify.app' // Con www
-] : ['*'];
+] : ['*'];*/
 
 app.use(cors({
     origin: function (origin, callback) {
-        console.log("Solicitando desde origin:", origin);
-        if (!origin || allowedOrigins.includes(origin) || process.env.NODE_ENV !== 'production') {
+        console.log("Origin recibido:", origin);
+        if (!origin || allowedOrigins.includes(origin)) { //|| process.env.NODE_ENV !== 'production') {
             callback(null, true);
         } else {
-            console.error("CORS Error: Origin not allowed:", origin);
-            callback(new Error('Not allowed by CORS'));
+            console.error("CORS bloqueado para:", origin);
+            callback(new Error('No permitido por CORS'));
         }
     },
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'], // Añadido OPTIONS y PATCH
@@ -97,7 +101,7 @@ app.use('/api/marcas', marcaRoutes);
 app.use('/api/tipos-producto', tipoProductoRoutes);
 
 // Middleware para rutas no encontradas
-app.use((req, res, next) => {
+app.use((req, res) => {
     res.status(404).json({ message: 'Ruta no encontrada' });
 });
 
