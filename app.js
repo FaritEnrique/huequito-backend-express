@@ -22,30 +22,30 @@ process.stdout.write("\uFEFF");
 dotenv.config();
 
 // Verifica que las variables esenciales están definidas
-const requiredEnvVars = ["DATABASE_URL", "FRONTEND_URL_PROD", "FRONTEND_URL_DEV", "PORT", "FORCE_HTTPS"];
+/*const requiredEnvVars = ["DATABASE_URL", "FRONTEND_URL_PROD", "FRONTEND_URL_DEV", "PORT", "FORCE_HTTPS"];
 
 requiredEnvVars.forEach(envVar => {
     if (!process.env[envVar]) {
         console.error(`❌ ERROR: La variable ${envVar} no está definida en el .env`);
         process.exit(1); // Detiene la ejecución si falta una variable clave
     }
-});
+});*/
 
 // Inicializa Express
 const app = express();
-const port = Number(process.env.PORT) || 8080;
-const forceHttps = process.env.FORCE_HTTPS === "true"; // Convierte el string a booleano
+const port = process.env.PORT || 8080;
+//const forceHttps = process.env.FORCE_HTTPS === "true"; // Convierte el string a booleano
 
 // Confía en el proxy de AWS Elastic Beanstalk
 app.enable("trust proxy");
 
 // Redirección HTTP a HTTPS en producción
-app.use((req, res, next) => {
+/*app.use((req, res, next) => {
     if (forceHttps && req.headers["x-forwarded-proto"] !== "https" && process.env.NODE_ENV === "production") {
         return res.redirect(`https://${req.headers.host}${req.url}`);
     }
     next();
-});
+});*/
 
 // Middleware de seguridad
 app.use(helmet());
@@ -59,7 +59,7 @@ const allowedOrigins = [
 
 app.use(cors({
     origin: (origin, callback) => {
-        if (!origin || allowedOrigins.some(o => origin.startsWith(o))) {
+        if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);
         } else {
             console.error("CORS bloqueado para:", origin);
@@ -111,13 +111,23 @@ app.use((req, res) => {
 });
 
 // Middleware global para manejar errores
-app.use((err, req, res, next) => {
+/*app.use((err, req, res, next) => {
     console.error("ERROR:", err.stack);
     res.status(err.status || 500).json({
         success: false,
         message: process.env.NODE_ENV === "production"
             ? "Algo salió mal en el servidor"
             : err.message, // Muestra el error real en desarrollo
+    });
+});*/
+
+app.use((err, req, res, next) => {
+    console.error("ERROR:", err.message); // Evita exponer el stack en prod
+    res.status(err.status || 500).json({
+        success: false,
+        message: process.env.NODE_ENV === "production"
+            ? "Error interno en el servidor"
+            : err.message,
     });
 });
 
