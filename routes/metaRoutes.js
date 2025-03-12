@@ -2,6 +2,10 @@ import express from 'express';
 
 const router = express.Router();
 
+router.get('/', (req, res) => {
+    res.send("Bienvenido a la API de MetaTags. Usa /meta/{slug} para obtener metadatos.");
+});
+
 router.get('/:slug', async (req, res) => {
     const { slug } = req.params;
 
