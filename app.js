@@ -14,6 +14,7 @@ import authRoutes from "./routes/authRoutes.js";
 import productoRoutes from "./routes/productoRoutes.js";
 import marcaRoutes from "./routes/marcaRoutes.js";
 import tipoProductoRoutes from "./routes/tipoProductoRoutes.js";
+import metaRoutes from './routes/metaRoutes.js';
 
 // Fuerza UTF-8 en la consola
 process.stdout.write("\uFEFF");
@@ -104,6 +105,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/productos", productoRoutes);
 app.use("/api/marcas", marcaRoutes);
 app.use("/api/tipos-producto", tipoProductoRoutes);
+app.use('/meta', metaRoutes);
 
 // Middleware para rutas no encontradas
 app.use((req, res) => {
